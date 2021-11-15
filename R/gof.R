@@ -1132,15 +1132,15 @@ indiv_plot <- function(data,
                         dplyr::pull() %>% unique()
     
         
-    data2 <- data %>% 
+    data2 <- data %>% dplyr::filter( {{strati1}}  %in% datcwres) %>%
 				     tidyr::pivot_longer(cols=c({{ y }},{{ pred }},{{ ipred }}),names_to = "variable",values_to = "value")
     
     
-    ip_npage <- ceiling(data %>% dplyr::group_by({{strati1}}) %>%
+    ip_npage <- ceiling(data2 %>% dplyr::group_by({{strati1}}) %>%
                                  dplyr::slice(1) %>%
                                  dplyr::ungroup() %>% nrow()/(ip_ncol *  ip_nrow ))
     
-    remainder_id <- data %>%  dplyr::group_by({{strati1}}) %>%
+    remainder_id <- data2 %>%  dplyr::group_by({{strati1}}) %>%
                 						  dplyr::slice(1) %>%
                 						  dplyr::ungroup() %>% nrow()%%(ip_ncol *  ip_nrow )
     
@@ -1221,8 +1221,8 @@ indiv_plot <- function(data,
               
               ggplot2::geom_point( data=data2 %>% filter(variable ==  filt_y),   aes(x =  {{ x }}, y = value, shape='dv',colour='dv'),size=shape_size,show.legend = TRUE) +  
                    
-              ggplot2::scale_shape_manual(name='variable',labels=c('ipred'='IPRED','pred'='PRED','dv'='DV'),values=shape_shape)+
-              ggplot2::scale_color_manual(name='variable',labels=c('ipred'='IPRED','pred'='PRED','dv'='DV'),values=color_color)+
+              ggplot2::scale_shape_manual(name='variable',breaks=c("dv"),labels=c('dv'='DV'),values=shape_shape)+
+              ggplot2::scale_color_manual(name='variable',breaks=c("dv"),labels=c('dv'='DV'),values=color_color)+
                    
               ggplot2::geom_ribbon(data = data3, aes(x = {{ x }}, ymin = ci.low, ymax = ci.up, fill = 'ipred'),alpha=alpha_fill) +
               ggplot2::scale_fill_manual(name='variable',labels=c('ipred'=paste0(ci, '% CI')),values=fill_fill) +
@@ -1241,3 +1241,4 @@ indiv_plot <- function(data,
 }
   
 }
+
